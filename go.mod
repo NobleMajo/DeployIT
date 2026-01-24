@@ -1,4 +1,4 @@
-module coreunit.net/wgg
+module github.com/noblemajo/deployit
 
 go 1.23
 
