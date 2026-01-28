@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"coreunit.net/wgg/lib/stringfs"
+	"github.com/noblemajo/deployit/lib/stringfs"
 )
 
 type SshConfig struct {

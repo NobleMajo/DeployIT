@@ -7,8 +7,8 @@ import (
 	"os"
 	"strconv"
 
-	dit "coreunit.net/wgg/internal"
-	"coreunit.net/wgg/lib/sshutils"
+	dit "github.com/noblemajo/deployit/internal"
+	"github.com/noblemajo/deployit/lib/sshutils"
 	"github.com/joho/godotenv"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
