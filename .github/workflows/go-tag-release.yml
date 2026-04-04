@@ -1,0 +1,28 @@
+name: Go tag release
+
+on:
+  push:
+    tags:
+      - "v[0-9]*.[0-9]*.[0-9]*" # allowing for release tags
+      - "v[0-9]*.[0-9]*.[0-9]*-*" # allowing for pre-release tags
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body: |
+            DeployIT release ${{ github.ref_name }}.
+
+            Prebuilt binaries are attached by the **Go binary release** workflow after this job finishes.
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

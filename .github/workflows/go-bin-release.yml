@@ -3,6 +3,9 @@ name: Go binary release
 on:
   release:
     types: [created, edited]
+  workflow_run:
+    workflows: ["Go tag release"]
+    types: [completed]
 
 permissions:
   contents: write
@@ -11,6 +14,11 @@ permissions:
 jobs:
   releases-matrix:
     name: Release Go Binary
+    if: >-
+      github.event_name == 'release'
+      || (github.event_name == 'workflow_run'
+          && github.event.workflow_run.conclusion == 'success'
+          && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,6 +31,19 @@ jobs:
             goos: "windows"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event.release.tag_name }}
+
+      - name: Version and commit for ldflags
+        id: meta
+        run: |
+          VERSION=$(git describe --tags --exact-match 2>/dev/null || true)
+          if [ -z "$VERSION" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - uses: wangyoucao577/go-release-action@v1
         with:
           binary_name: "dit"
@@ -31,4 +52,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          ldflags: "-X main.Version=${{ github.ref_name }} -X main.Commit=${{ github.sha }}"
+          release_tag: ${{ steps.meta.outputs.version }}
+          ldflags: "-X main.Version=${{ steps.meta.outputs.version }} -X main.Commit=${{ steps.meta.outputs.commit }}"
