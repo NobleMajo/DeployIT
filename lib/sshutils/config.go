@@ -73,7 +73,7 @@ func NewSshConfig(
 			strings.HasPrefix(privateKey, "/") ||
 			strings.HasPrefix(privateKey, "file://") {
 			privateKeyPath := &privateKey
-			err := stringfs.ParsePathRef(privateKeyPath)
+			err := stringfs.AbsolutePathRef(privateKeyPath)
 			if err != nil {
 				return SshConfig{}, errors.New(
 					"error parsing path: " +

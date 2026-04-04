@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net"
 	"strconv"
-	"strings"
 
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
@@ -86,25 +85,4 @@ func HandleSftp(
 	}
 
 	return nil
-}
-
-func JoinPath(sftp *sftp.Client, path ...string) (string, error) {
-	if len(path) != 0 &&
-		len(path[0]) != 0 {
-		if strings.HasPrefix(path[0], "~/") ||
-			strings.HasPrefix(path[0], "./") {
-			cwd, err := sftp.Getwd()
-			if err != nil {
-				return "", errors.New("error getting cwd: " + err.Error())
-			}
-
-			if strings.HasPrefix(path[0], "../") {
-				path[0] = cwd + "/" + path[0]
-			} else {
-				path[0] = cwd + path[0][1:]
-			}
-		}
-	}
-
-	return sftp.Join(path...), nil
 }
