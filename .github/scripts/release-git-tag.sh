@@ -1,6 +1,4 @@
 #!/bin/sh
-# POSIX sh: bump vX.Y.Z (patch|minor|major), confirm (y only), git tag + push origin.
-# Bump base = latest tag matching ^v[0-9]+\.[0-9]+\.[0-9]+$ (no prerelease suffix).
 
 set -e
 
@@ -54,7 +52,7 @@ if git rev-parse -q --verify "refs/tags/$next" >/dev/null 2>&1; then
 	exit 1
 fi
 
-printf 'Create and push tag %s? This triggers the release pipeline. Only "y" continues. [y/N] ' "$next"
+printf 'Create, push and release tag %s? [y/n] ' "$next"
 read -r confirm
 case "$confirm" in
 y) ;;
