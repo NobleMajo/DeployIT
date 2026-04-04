@@ -26,10 +26,15 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
+          generate_release_notes: true
           body: |
-            DeployIT release ${{ github.ref_name }}.
+            # ${{ github.event.repository.name }} · ${{ github.ref_name }}
 
-            Prebuilt binaries are attached by the **Go binary release** workflow after this job finishes.
+            **NOTE**:
+            *This release was triggered by the push of a semver git tag.*
+            *Prebuilt binaries will automatically get attached by a separate workflow.*
+
+            ---
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
         env:

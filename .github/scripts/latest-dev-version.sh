@@ -2,14 +2,14 @@
 
 set -e
 
-top=$(git rev-parse --show-toplevel 2>/dev/null) || {
-	printf '%s\n' '0.0.1-dev'
-	exit 0
-}
-cd "$top" || {
-	printf '%s\n' '0.0.1-dev'
-	exit 0
-}
+# top=$(git rev-parse --show-toplevel 2>/dev/null) || {
+# 	printf '%s\n' '0.0.1-dev'
+# 	exit 0
+# }
+# cd "$top" || {
+# 	printf '%s\n' '0.0.1-dev'
+# 	exit 0
+# }
 
 git fetch --tags --quiet 2>/dev/null || :
 
