@@ -1,6 +1,6 @@
 DISPLAY_NAME := DeployIT
 SHORT_NAME := dit
-VERSION := 1.0.0
+VERSION := 1.1.0
 
 COMMIT := $(shell git rev-parse --short HEAD)
 BUILD_ARGS := "-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.DisplayName=$(DISPLAY_NAME) -X main.ShortName=$(SHORT_NAME)"
