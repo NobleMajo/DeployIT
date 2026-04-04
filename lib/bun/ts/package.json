@@ -1,0 +1,15 @@
+{
+  "name": "go-bun-interface",
+  "module": "interface.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "compile": "bun build --compile ./interface.ts --outfile ./interface"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
