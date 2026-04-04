@@ -10,11 +10,6 @@ PORT ?= 8080
 -include .env
 export
 
-## latest-version: print dev version from git tags (…-dev)
-.PHONY: latest-version
-latest-version:
-	@$(GITHUB_SCRIPTS)/latest-dev-version.sh
-
 ## tag-patch: tag a patch release
 .PHONY: tag-patch
 tag-patch:
