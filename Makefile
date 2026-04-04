@@ -43,17 +43,25 @@ short_name:
 
 .PHONY: clean # cleans up the tmp, build and docker cache
 clean:
-	@echo "Clearing temporary files..."
+	@if command -v docker 2>&1 >/dev/null; then \
+		echo "cleanup docker..."; \
+		touch .env; \
+		docker compose down --remove-orphans; \
+	    docker compose run \
+			--rm -it \
+			--name $(SHORT_NAME)-local-clean \
+			local \
+			-c "rm -rf ./tmp/cache ./bin"; \
+		docker compose down --remove-orphans --rmi all; \
+	fi
+
 	rm -rf ./tmp ./bin
+
 	@if command -v go 2>&1 >/dev/null; then \
 		echo "cleanup go..."; \
 		go clean -cache -fuzzcache; \
 	fi
-	@if command -v docker 2>&1 >/dev/null; then \
-		echo "cleanup docker..."; \
-		docker compose down --remove-orphans --rmi all; \
-		docker image prune -f; \
-	fi
+
 	@echo "cleanup done!"
 	@echo "WARNING: the .env file still exists!"
 
