@@ -1,16 +1,12 @@
 package main
 
 import (
-	"errors"
 	"log/slog"
 	"os"
 	"strconv"
 
 	"github.com/joho/godotenv"
-	dit "github.com/noblemajo/deployit/internal"
-	"github.com/noblemajo/deployit/lib/sshutils"
-	"github.com/pkg/sftp"
-	"golang.org/x/crypto/ssh"
+	"github.com/noblemajo/deployit/lib/dit"
 )
 
 var DisplayName string = "Unset"
@@ -73,11 +69,11 @@ func main() {
 		i++
 	}
 
-	hosts := []SshTaskHost{}
+	hosts := []dit.SshTaskHost{}
 
 	i = 0
 	for connecitonUrl, sshTaskList := range sshTasks {
-		taskHost, err := NewSshTaskHost(
+		taskHost, err := dit.NewSshTaskHost(
 			i,
 			connecitonUrl,
 			sshTaskList,
@@ -110,80 +106,4 @@ func main() {
 	}
 
 	slog.Info("done")
-}
-
-type SshTaskHost struct {
-	ID            int
-	connecitonUrl string
-	sshConfig     sshutils.SshConfig
-	tasks         []dit.Task
-}
-
-func NewSshTaskHost(
-	id int,
-	connecitonUrl string,
-	rawTasks []string,
-) (SshTaskHost, error) {
-	sshConfig, err := sshutils.NewSshConfig(connecitonUrl)
-	if err != nil {
-		return SshTaskHost{}, err
-	}
-
-	tasks := []dit.Task{}
-	var newTask dit.Task
-
-	for _, rawTask := range rawTasks {
-		newTask, err = dit.ParseTask(rawTask)
-		if err != nil {
-			return SshTaskHost{}, err
-		}
-
-		tasks = append(tasks, newTask)
-	}
-
-	return SshTaskHost{
-		ID:            id,
-		connecitonUrl: connecitonUrl,
-		sshConfig:     sshConfig,
-		tasks:         tasks,
-	}, nil
-}
-
-func (taskHost *SshTaskHost) PrecheckAll() error {
-	for _, task := range taskHost.tasks {
-		err := task.Precheck()
-		if err != nil {
-			return errors.New(
-				"precheck failed for '" + strconv.Itoa(taskHost.ID) +
-					"' task '" + task.Raw() + "': " +
-					err.Error(),
-			)
-		}
-	}
-
-	return nil
-}
-
-func (taskHost *SshTaskHost) Deploy() error {
-	return sshutils.HandleSftp(
-		taskHost.sshConfig,
-		func(
-			sftp *sftp.Client,
-			session *ssh.Session,
-		) error {
-			for id, task := range taskHost.tasks {
-				slog.Info("execute task", "task", task.Raw())
-				err := task.Execute(sftp, session)
-				if err != nil {
-					return errors.New(
-						"error host-" + strconv.Itoa(taskHost.ID) +
-							" executing task-" + strconv.Itoa(id) + ": " +
-							err.Error(),
-					)
-				}
-			}
-
-			return nil
-		},
-	)
 }
