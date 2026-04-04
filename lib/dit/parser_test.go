@@ -11,7 +11,7 @@ func TestNewSshTaskHost_success(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if h.ID != 0 || h.ConnecitonUrl != "ssh://alice@example.com/app!secret" {
+	if h.ID != 0 || h.ConnectionURL != "ssh://alice@example.com/app!secret" {
 		t.Fatalf("unexpected host: %+v", h)
 	}
 	if len(h.Tasks) != 1 {

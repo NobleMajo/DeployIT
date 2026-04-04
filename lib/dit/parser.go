@@ -12,17 +12,17 @@ import (
 
 type SshTaskHost struct {
 	ID            int
-	ConnecitonUrl string
+	ConnectionURL string
 	SshConfig     sshutils.SshConfig
 	Tasks         []Task
 }
 
 func NewSshTaskHost(
 	id int,
-	connecitonUrl string,
+	connectionURL string,
 	rawTasks []string,
 ) (SshTaskHost, error) {
-	sshConfig, err := sshutils.NewSshConfig(connecitonUrl)
+	sshConfig, err := sshutils.NewSshConfig(connectionURL)
 	if err != nil {
 		return SshTaskHost{}, err
 	}
@@ -41,7 +41,7 @@ func NewSshTaskHost(
 
 	return SshTaskHost{
 		ID:            id,
-		ConnecitonUrl: connecitonUrl,
+		ConnectionURL: connectionURL,
 		SshConfig:     sshConfig,
 		Tasks:         tasks,
 	}, nil

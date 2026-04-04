@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: wangyoucao577/go-release-action@v1
         with:
-          binary_name: "wgg"
+          binary_name: "dit"
           goversion: "1.26"
           extra_files: LICENSE README.md CONTRIBUTING.md
           github_token: ${{ secrets.GITHUB_TOKEN }}

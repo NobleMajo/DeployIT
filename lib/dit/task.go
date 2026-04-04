@@ -211,7 +211,7 @@ func ParseTask(task string) (Task, error) {
 		if len(splitted) != 2 {
 			return nil, errors.New(
 				"invalid command task: task has invalid format: " +
-					"COMMAND@<Command> but is '" +
+					"CMD@<Command> but is '" +
 					task + "'",
 			)
 		}

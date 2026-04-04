@@ -68,14 +68,6 @@ func AbsolutePathFrom(homeDir string, workDir string, path string) (string, erro
 	path = strings.TrimSpace(path)
 
 	if strings.HasPrefix(path, "~") {
-		if strings.HasPrefix(path, "~") {
-			homeDir, err := os.UserHomeDir()
-			if err != nil {
-				return "", errors.New("cant get users home dir:\n> " + err.Error())
-			}
-
-			path = strings.Replace(path, "~", homeDir, 1)
-		}
 		path = strings.Replace(path, "~", homeDir, 1)
 	}
 

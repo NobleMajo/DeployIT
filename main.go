@@ -33,14 +33,18 @@ func main() {
 	allowEmptyString := os.Getenv("DIT_ALLOW_EMPTY")
 	allowEmpty := allowEmptyString == "true"
 
-	sshTasks := map[string][]string{}
+	type sshNode struct {
+		connectionURL string
+		tasks         []string
+	}
+	var nodes []sshNode
 
 	var j int
-	var i int = 0
+	i := 0
 	for {
-		connecitonUrl := os.Getenv("DIT_NODE" + strconv.Itoa(i+1))
+		connectionURL := os.Getenv("DIT_NODE" + strconv.Itoa(i+1))
 
-		if connecitonUrl == "" {
+		if connectionURL == "" {
 			if i == 0 {
 				if allowEmpty {
 					slog.Info("no ssh config for node", "node", i+1)
@@ -54,7 +58,7 @@ func main() {
 			break
 		}
 
-		sshTasks[connecitonUrl] = []string{}
+		tasks := []string{}
 
 		j = 0
 		for {
@@ -69,22 +73,22 @@ func main() {
 				break
 			}
 
-			sshTasks[connecitonUrl] = append(sshTasks[connecitonUrl], sshTask)
+			tasks = append(tasks, sshTask)
 
 			j++
 		}
 
+		nodes = append(nodes, sshNode{connectionURL: connectionURL, tasks: tasks})
+
 		i++
 	}
 
-	hosts := []dit.SshTaskHost{}
-
-	i = 0
-	for connecitonUrl, sshTaskList := range sshTasks {
+	hosts := make([]dit.SshTaskHost, 0, len(nodes))
+	for i, node := range nodes {
 		taskHost, err := dit.NewSshTaskHost(
 			i,
-			connecitonUrl,
-			sshTaskList,
+			node.connectionURL,
+			node.tasks,
 		)
 
 		if err != nil {
@@ -93,8 +97,6 @@ func main() {
 		}
 
 		hosts = append(hosts, taskHost)
-
-		i++
 	}
 
 	for _, host := range hosts {

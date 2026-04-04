@@ -22,7 +22,7 @@ func PromptNewPassword() (string, error) {
 		}
 
 		if len(newPassword) < 4 {
-			fmt.Println("Password too short! Use CRTL+C to abort.")
+			fmt.Println("Password too short! Use Ctrl+C to abort.")
 			continue
 		}
 
@@ -34,7 +34,7 @@ func PromptNewPassword() (string, error) {
 		}
 
 		if newPassword != newPassword2 {
-			fmt.Println("Passwords do not match! Use CRTL+C to abort.")
+			fmt.Println("Passwords do not match! Use Ctrl+C to abort.")
 			continue
 		}
 
@@ -56,7 +56,7 @@ func PromptPassword() (string, error) {
 		}
 
 		if len(newPassword) < 4 {
-			fmt.Println("Password too short! Use CRTL+C to abort.")
+			fmt.Println("Password too short! Use Ctrl+C to abort.")
 			continue
 		}
 

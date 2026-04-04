@@ -20,48 +20,48 @@ type SshConfig struct {
 }
 
 func NewSshConfig(
-	rawConnecitonUrl string,
+	rawConnectionURL string,
 ) (SshConfig, error) {
 	var password string
 	var privateKey string
-	var connecitonUrl string
+	var connectionURL string
 
-	// rawConnecitonUrl example "ssh://User@hostname:2222/path/to/directory@privateKeyPath!password"
-	if strings.Contains(rawConnecitonUrl, "*") {
-		if strings.Contains(rawConnecitonUrl, "!") {
-			if strings.Index(rawConnecitonUrl, "*") > strings.Index(rawConnecitonUrl, "!") {
+	// rawConnectionURL example "ssh://User@hostname:2222/path/to/directory@privateKeyPath!password"
+	if strings.Contains(rawConnectionURL, "*") {
+		if strings.Contains(rawConnectionURL, "!") {
+			if strings.Index(rawConnectionURL, "*") > strings.Index(rawConnectionURL, "!") {
 				return SshConfig{}, errors.New(
 					"invalid path credentials, '*'-privateKey needs to be defined before '!'-password, as suffix '" +
-						rawConnecitonUrl + "'",
+						rawConnectionURL + "'",
 				)
 			}
 
-			splitted := strings.Split(rawConnecitonUrl, "*")
+			splitted := strings.Split(rawConnectionURL, "*")
 
-			connecitonUrl = strings.TrimSpace(splitted[0])
+			connectionURL = strings.TrimSpace(splitted[0])
 			privateKey = strings.TrimSpace(strings.Join(splitted[1:], "*"))
 
 			splitted = strings.Split(privateKey, "!")
 			privateKey = strings.TrimSpace(splitted[0])
 			password = strings.TrimSpace(strings.Join(splitted[1:], "!"))
 		} else {
-			splitted := strings.Split(rawConnecitonUrl, "*")
-			connecitonUrl = strings.TrimSpace(splitted[0])
+			splitted := strings.Split(rawConnectionURL, "*")
+			connectionURL = strings.TrimSpace(splitted[0])
 			password = ""
 			privateKey = strings.TrimSpace(strings.Join(splitted[1:], "*"))
 		}
 	} else {
-		if strings.Contains(rawConnecitonUrl, "!") {
-			splitted := strings.Split(rawConnecitonUrl, "!")
+		if strings.Contains(rawConnectionURL, "!") {
+			splitted := strings.Split(rawConnectionURL, "!")
 
-			connecitonUrl = strings.TrimSpace(splitted[0])
+			connectionURL = strings.TrimSpace(splitted[0])
 			password = strings.TrimSpace(strings.Join(splitted[1:], "!"))
 			privateKey = ""
 		} else {
 			return SshConfig{}, errors.New(
 				"invalid path credentials, need '*' for privateKey " +
 					"or '!' for password, is '" +
-					rawConnecitonUrl + "'",
+					rawConnectionURL + "'",
 			)
 		}
 	}
@@ -100,8 +100,8 @@ func NewSshConfig(
 		}
 	}
 
-	// connecitonUrl example "ssh://User@hostname:2222/path/to/directory"
-	parsedURL, err := url.Parse(connecitonUrl)
+	// connectionURL example "ssh://User@hostname:2222/path/to/directory"
+	parsedURL, err := url.Parse(connectionURL)
 	if err != nil {
 		return SshConfig{}, errors.New("ssh url parse error: " + err.Error())
 	}

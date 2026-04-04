@@ -123,17 +123,14 @@ func TestAbsolutePathFrom_absoluteIgnoresWorkDir(t *testing.T) {
 	}
 }
 
-func TestAbsolutePathFrom_tildeUsesRealHomeThenParam(t *testing.T) {
+func TestAbsolutePathFrom_tildeUsesParamHomeDir(t *testing.T) {
 	t.Parallel()
-	realHome, err := os.UserHomeDir()
+	const fakeHome = "/fake/home"
+	got, err := AbsolutePathFrom(fakeHome, "/w", "~/sub")
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := AbsolutePathFrom(realHome, "/w", "~/sub")
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := filepath.Join(realHome, "sub")
+	want := filepath.Join(fakeHome, "sub")
 	if got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
