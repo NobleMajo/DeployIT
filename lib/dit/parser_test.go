@@ -1,10 +1,8 @@
-package main
+package dit
 
 import (
 	"strings"
 	"testing"
-
-	dit "github.com/noblemajo/deployit/internal"
 )
 
 func TestNewSshTaskHost_success(t *testing.T) {
@@ -13,14 +11,51 @@ func TestNewSshTaskHost_success(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if h.ID != 0 || h.connecitonUrl != "ssh://alice@example.com/app!secret" {
+	if h.ID != 0 || h.ConnecitonUrl != "ssh://alice@example.com/app!secret" {
 		t.Fatalf("unexpected host: %+v", h)
 	}
-	if len(h.tasks) != 1 {
-		t.Fatalf("tasks: %d", len(h.tasks))
+	if len(h.Tasks) != 1 {
+		t.Fatalf("tasks: %d", len(h.Tasks))
 	}
-	if _, ok := h.tasks[0].(*dit.CommandTask); !ok {
-		t.Fatalf("want CommandTask, got %T", h.tasks[0])
+	if _, ok := h.Tasks[0].(*CommandTask); !ok {
+		t.Fatalf("want CommandTask, got %T", h.Tasks[0])
+	}
+}
+
+func TestNewSshTaskHost_sshConfigFromURL(t *testing.T) {
+	t.Parallel()
+	h, err := NewSshTaskHost(0, "ssh://bob@deploy.example:2222/var/www!mypass", []string{"CMD@true"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg := h.SshConfig
+	if cfg.User != "bob" || cfg.Host != "deploy.example" || cfg.Port != 2222 {
+		t.Fatalf("unexpected ssh config: %+v", cfg)
+	}
+	if cfg.Password != "mypass" {
+		t.Fatalf("Password = %q", cfg.Password)
+	}
+	if cfg.TargetDir != "/var/www" {
+		t.Fatalf("TargetDir = %q", cfg.TargetDir)
+	}
+}
+
+func TestNewSshTaskHost_multipleTasks(t *testing.T) {
+	t.Parallel()
+	h, err := NewSshTaskHost(0, "ssh://u@h.example/x!p", []string{
+		"CMD@date",
+		"CMD@whoami",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(h.Tasks) != 2 {
+		t.Fatalf("want 2 tasks, got %d", len(h.Tasks))
+	}
+	for i, task := range h.Tasks {
+		if _, ok := task.(*CommandTask); !ok {
+			t.Fatalf("task %d: want CommandTask, got %T", i, task)
+		}
 	}
 }
 
@@ -69,6 +104,9 @@ func TestPrecheckAll_uploadMissingFile(t *testing.T) {
 	}
 	if !strings.Contains(pcheckErr.Error(), "precheck failed") {
 		t.Fatalf("unexpected: %v", pcheckErr)
+	}
+	if !strings.Contains(pcheckErr.Error(), "'0'") {
+		t.Fatalf("expected host id in message: %v", pcheckErr)
 	}
 }
 
