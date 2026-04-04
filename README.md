@@ -1,10 +1,12 @@
 # DeployIT
-![CI/CD](https://github.com/CoreUnit-NET/deployit/actions/workflows/go-bin-release.yml/badge.svg)
-![CI/CD](https://github.com/CoreUnit-NET/deployit/actions/workflows/go-test-build.yml/badge.svg)  
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 ![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fdeployit)
 ![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fdeployit)
 ![](https://img.shields.io/badge/dynamic/json?color=navy&label=forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fdeployit)
+
+![](https://github.com/noblemajo/deployit/actions/workflows/go-test-build.yml/badge.svg)  
+![](https://github.com/noblemajo/deployit/actions/workflows/go-tag-release.yml/badge.svg)  
+![](https://github.com/noblemajo/deployit/actions/workflows/go-bin-release.yml/badge.svg)  
 
 Uses ssh + sftp to deploy configurations to Linux servers and can execute simple commands.
 
@@ -37,8 +39,10 @@ If a password is used, use `!your-password` instead of `*<priv-key-path>`.
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)
   - [Install via go](#install-via-go)
+          - [*For this section go is required, check out the install go guide.*](#for-this-section-go-is-required-check-out-the-install-go-guide)
   - [Install via wget](#install-via-wget)
   - [Build](#build)
+          - [*For this section go is required, check out the install go guide.*](#for-this-section-go-is-required-check-out-the-install-go-guide-1)
   - [Install go](#install-go)
 - [Contributing](#contributing)
 - [License](#license)
