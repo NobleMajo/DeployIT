@@ -1,13 +1,34 @@
 DISPLAY_NAME := DeployIT
 SHORT_NAME := dit
-VERSION := 1.1.1
 
+GITHUB_SCRIPTS := .github/scripts
+VERSION := $(shell $(GITHUB_SCRIPTS)/latest-dev-version.sh)
 COMMIT := $(shell git rev-parse --short HEAD)
 BUILD_ARGS := "-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.DisplayName=$(DISPLAY_NAME) -X main.ShortName=$(SHORT_NAME)"
 PORT ?= 8080
 
 -include .env
 export
+
+## latest-version: print dev version from git tags (…-dev)
+.PHONY: latest-version
+latest-version:
+	@$(GITHUB_SCRIPTS)/latest-dev-version.sh
+
+## tag-patch: tag a patch release
+.PHONY: tag-patch
+tag-patch:
+	@$(GITHUB_SCRIPTS)/release-git-tag.sh patch
+
+## tag-minor: tag a minor release
+.PHONY: tag-minor
+tag-minor:
+	@$(GITHUB_SCRIPTS)/release-git-tag.sh minor
+
+## tag-major: tag a major release
+.PHONY: tag-major
+tag-major:
+	@$(GITHUB_SCRIPTS)/release-git-tag.sh major
 
 ## info: prints a project info message
 .PHONY: info
