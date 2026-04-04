@@ -33,6 +33,14 @@ build:
 		$(MAIN_GO)
 	chmod +x bin
 
+.PHONY: buildflags # builds the build flags for the go build command
+buildflags:
+	@echo "-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.DisplayName=$(DISPLAY_NAME) -X main.ShortName=$(SHORT_NAME)"
+
+.PHONY: short_name # prints the short name
+short_name:
+	@echo $(SHORT_NAME)
+
 .PHONY: clean # cleans up the tmp, build and docker cache
 clean:
 	@echo "Clearing temporary files..."

@@ -36,7 +36,17 @@ jobs:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event.release.tag_name }}
           fetch-depth: 0
 
-      - uses: wangyoucao577/go-release-action@v1
+      - name: Get build metadata
+        id: meta
+        run: |
+          echo "short_name=$(make -s short_name)" >> "$GITHUB_OUTPUT"
+          TAG=$(git describe --tags --exact-match HEAD)
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse --short "${TAG}^{commit}")" >> "$GITHUB_OUTPUT"
+          echo "ldflags=$(make -s buildflags)" >> "$GITHUB_OUTPUT"
+
+      - name: Build release binaries
+        uses: wangyoucao577/go-release-action@v1
         with:
           binary_name: ${{ steps.meta.outputs.short_name }}
           goversion: "latest"
