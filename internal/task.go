@@ -2,8 +2,8 @@ package dit
 
 import (
 	"errors"
-	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -170,7 +170,7 @@ func (task *CommandTask) Execute(
 			)
 		}
 	}
-	fmt.Println("\nCommand output of '" + task.Cmd + "':\n" + string(out) + "")
+	slog.Info("command output", "cmd", task.Cmd, "output", string(out))
 
 	return nil
 }

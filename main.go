@@ -2,14 +2,13 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strconv"
 
+	"github.com/joho/godotenv"
 	dit "github.com/noblemajo/deployit/internal"
 	"github.com/noblemajo/deployit/lib/sshutils"
-	"github.com/joho/godotenv"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 )
@@ -20,11 +19,19 @@ var Version string = "?.?.?"
 var Commit string = "???????"
 
 func main() {
-	fmt.Println(DisplayName + " version v" + Version + ", build " + Commit)
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})))
+
+	slog.Info("starting",
+		"display_name", DisplayName,
+		"version", Version,
+		"commit", Commit,
+	)
 
 	err := godotenv.Load()
 	if err == nil {
-		fmt.Println("Environment variables from .env loaded")
+		slog.Info("environment variables loaded", "source", ".env")
 	}
 
 	sshTasks := map[string][]string{}
@@ -34,9 +41,10 @@ func main() {
 	for {
 		connecitonUrl := os.Getenv("DIT_NODE" + strconv.Itoa(i+1))
 
-		if len(connecitonUrl) <= 0 {
+		if connecitonUrl == "" {
 			if i == 0 {
-				log.Fatalln("no ssh config for node " + strconv.Itoa(i+1))
+				slog.Error("no ssh config for node", "node", i+1)
+				os.Exit(1)
 			}
 
 			break
@@ -48,9 +56,10 @@ func main() {
 		for {
 			sshTask := os.Getenv("DIT_NODE" + strconv.Itoa(i+1) + "_TASK" + strconv.Itoa(j+1))
 
-			if len(sshTask) <= 0 {
+			if sshTask == "" {
 				if j == 0 {
-					log.Fatalln("no ssh task for node " + strconv.Itoa(i+1) + " and task " + strconv.Itoa(j+1))
+					slog.Error("no ssh task for node", "node", i+1, "task_index", j+1)
+					os.Exit(1)
 				}
 
 				break
@@ -75,7 +84,8 @@ func main() {
 		)
 
 		if err != nil {
-			log.Fatalln(err)
+			slog.Error("ssh task host setup failed", "err", err)
+			os.Exit(1)
 		}
 
 		hosts = append(hosts, taskHost)
@@ -86,18 +96,20 @@ func main() {
 	for _, host := range hosts {
 		err := host.PrecheckAll()
 		if err != nil {
-			log.Fatalln(err)
+			slog.Error("precheck failed", "err", err)
+			os.Exit(1)
 		}
 	}
 
 	for _, host := range hosts {
 		err := host.Deploy()
 		if err != nil {
-			log.Fatalln(err)
+			slog.Error("deploy failed", "err", err)
+			os.Exit(1)
 		}
 	}
 
-	fmt.Println("done")
+	slog.Info("done")
 }
 
 type SshTaskHost struct {
@@ -160,7 +172,7 @@ func (taskHost *SshTaskHost) Deploy() error {
 			session *ssh.Session,
 		) error {
 			for id, task := range taskHost.tasks {
-				fmt.Println("Execute task " + task.Raw())
+				slog.Info("execute task", "task", task.Raw())
 				err := task.Execute(sftp, session)
 				if err != nil {
 					return errors.New(
