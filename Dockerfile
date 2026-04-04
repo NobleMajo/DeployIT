@@ -4,15 +4,19 @@ FROM golang AS base
 EXPOSE 8080
 WORKDIR /app
 
-COPY go.mod* go.sum* ./
+COPY go.mod go.sum ./
 RUN go mod tidy
 
 ### LOCAL
 FROM base AS local
 
-RUN go install github.com/air-verse/air@v1
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends make git \
+	&& apt-get clean \
+    && apt-get autoclean \
+    && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT air
+ENTRYPOINT ["bash"]
 
 ### BASE DEPLOY
 FROM base AS base-deploy

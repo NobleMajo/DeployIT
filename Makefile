@@ -1,143 +1,88 @@
 DISPLAY_NAME := DeployIT
 SHORT_NAME := dit
+MAIN_GO := main.go
 
-GITHUB_SCRIPTS := .github/scripts
-VERSION := $(shell $(GITHUB_SCRIPTS)/latest-dev-version.sh)
+VERSION := $(shell .github/scripts/latest-dev-version.sh)
 COMMIT := $(shell git rev-parse --short HEAD)
-BUILD_ARGS := "-X main.Version=$(VERSION) -X main.Commit=$(COMMIT) -X main.DisplayName=$(DISPLAY_NAME) -X main.ShortName=$(SHORT_NAME)"
 PORT ?= 8080
-
 -include .env
 export
 
-## tag-patch: tag a patch release
-.PHONY: tag-patch
-tag-patch:
-	@$(GITHUB_SCRIPTS)/release-git-tag.sh patch
-
-## tag-minor: tag a minor release
-.PHONY: tag-minor
-tag-minor:
-	@$(GITHUB_SCRIPTS)/release-git-tag.sh minor
-
-## tag-major: tag a major release
-.PHONY: tag-major
-tag-major:
-	@$(GITHUB_SCRIPTS)/release-git-tag.sh major
-
-## info: prints a project info message
-.PHONY: info
-info:
+.DEFAULT_GOAL = help
+.MAIN = help
+.PHONY: help # prints the help message
+help:
 	@echo "$(DISPLAY_NAME) version $(VERSION), build $(COMMIT)"
+	@echo ""
+	@echo "Available make targets:"
+	@grep -hE '^\.PHONY: [a-zA-Z0-9_.-]+ #' $(MAKEFILE_LIST) \
+		| sed 's/^\.PHONY: //' \
+		| awk -F' #' '{ gsub(/^[ \t]+|[ \t]+$$/, "", $$2); \
+			printf "\033[36m%-12s\033[0m %s\n", $$1, $$2 }'
 
-## run: uses go to start the main.go
-.PHONY: run
+.PHONY: run # uses go to run the main program (MAIN_GO)
 run:
-	@go run main.go
+	@go run $(MAIN_GO)
 
-## build: uses go to build the app with build args
-.PHONY: build
+.PHONY: build # uses go to build the app with build args
 build:
 	@touch .env
 	go build \
-		-ldflags=$(BUILD_ARGS) \
-		-o bin
+		-ldflags="$(shell $(MAKE) -s buildflags)" \
+		-o bin \
+		$(MAIN_GO)
 	chmod +x bin
 
-## install: installs the build binary globally
-.PHONY: install
-install:
-	@cp ./bin /usr/local/bin/$(SHORT_NAME)
-
-## uninstall: uninstalls the build binary globally
-.PHONY: uninstall
-uninstall:
-	@rm -f /usr/local/bin/$(SHORT_NAME)
-
-## clean: cleans up the tmp, build and docker cache
-.PHONY: clean
+.PHONY: clean # cleans up the tmp, build and docker cache
 clean:
-	@rm -f bin
-	@rm -fr ./tmp
+	@echo "Clearing temporary files..."
+	rm -rf ./tmp ./bin
 	@if command -v go 2>&1 >/dev/null; then \
 		echo "cleanup go..."; \
-		go clean; \
 		go clean -cache -fuzzcache; \
 	fi
 	@if command -v docker 2>&1 >/dev/null; then \
 		echo "cleanup docker..."; \
-		CACHE_DIR="" PORT="" docker compose down --remove-orphans --rmi all; \
+		docker compose down --remove-orphans --rmi all; \
 		docker image prune -f; \
 	fi
 	@echo "cleanup done!"
 	@echo "WARNING: the .env file still exists!"
-	@echo "If installed also execute 'make uninstall' to uninstall the binary."
 
-## update: updates dependencies
-.PHONY: update
+.PHONY: update # updates go dependencies
 update:
 	go get -t -u ./...
 
-## test: runs all tests without coverage
-.PHONY: test
+.PHONY: test # runs all tests without coverage
 test:
-	go fmt ./...
 	go vet ./...
 	go test -failfast ./...
 	make -s build
-	DIT_ALLOW_EMPTY=true ./bin
+	./bin
 
-## init: prepares ands builds
-.PHONY: init
-init:
-	@touch .env
-	@echo "update deps..."
-	@go mod tidy
-	@echo "testing..."
-	@make -s test
-	@echo "building..."
-	@make -s build
-
-## air: starts the go bin in air watch mode
-.PHONY: air
-air:
+.PHONY: dev # starts the go bin in watch mode
+dev:
 	@go install github.com/air-verse/air@v1
 	@air
 
-## dev: starts a dev docker container
-.PHONY: dev
-dev:
+.PHONY: docker # starts an interactive bash inside a dev docker container
+docker:
 	@touch .env
-	$(eval CACHE_DIR = .tmp/.cache/go-build)
-	@if [ -d ~/.cache/go-build ]; then \
-		$(eval CACHE_DIR = ~/.cache/go-build) \
-		echo "Use users go-build cache dir."; \
-	else \
-		mkdir -p $(CACHE_DIR); \
-		echo "Use local go-build cache dir."; \
-	fi
-	
-	@docker rm -f $(SHORT_NAME)-local-dev > /dev/null 2>&1
+	@mkdir -p ./tmp
+	@docker compose run \
+	    --build --rm -P -it \
+	    --name $(SHORT_NAME)-local-bash \
+		local
 
-	PORT=${PORT} \
-		CACHE_DIR=${CACHE_DIR} \
-		docker compose run --build --rm -it --name $(SHORT_NAME)-local-dev -P local
+.PHONY: tag-patch # tag a patch release
+tag-patch:
+	@.github/scripts/release-git-tag.sh patch
 
-## exec: starts a bash in a dev container
-.PHONY: exec
-exec:
-	@touch .env
-	$(eval CACHE_DIR = .tmp/.cache/go-build)
-	@if [ -d ~/.cache/go-build ]; then \
-		$(eval CACHE_DIR = ~/.cache/go-build) \
-		echo "Use users go-build cache dir."; \
-	else \
-		mkdir -p $(CACHE_DIR); \
-		echo "Use local go-build cache dir."; \
-	fi
+.PHONY: tag-minor # tag a minor release
+tag-minor:
+	@.github/scripts/release-git-tag.sh minor
 
-	@docker rm -f $(SHORT_NAME)-local-bash > /dev/null 2>&1
-	
-	PORT=${PORT} \
-		CACHE_DIR=${CACHE_DIR} \
-		docker compose run --build --rm -it --name $(SHORT_NAME)-local-bash --entrypoint bash -P local
+.PHONY: tag-major # tag a major release
+tag-major:
+	@.github/scripts/release-git-tag.sh major
+

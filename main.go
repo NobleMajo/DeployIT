@@ -30,8 +30,8 @@ func main() {
 		slog.Info("environment variables loaded", "source", ".env")
 	}
 
-	allowEmptyString := os.Getenv("DIT_ALLOW_EMPTY")
-	allowEmpty := allowEmptyString == "true"
+	fastFailString := os.Getenv("DIT_FAST_FAIL")
+	fastFail := fastFailString == "true"
 
 	type sshNode struct {
 		connectionURL string
@@ -46,12 +46,12 @@ func main() {
 
 		if connectionURL == "" {
 			if i == 0 {
-				if allowEmpty {
-					slog.Info("no ssh config for node", "node", i+1)
-					os.Exit(0)
-				} else {
+				if fastFail {
 					slog.Error("no ssh config for node", "node", i+1)
 					os.Exit(1)
+				} else {
+					slog.Info("no ssh config for node", "node", i+1)
+					os.Exit(0)
 				}
 			}
 

@@ -3,6 +3,8 @@ services:
     build:
       dockerfile: "Dockerfile"
       target: "local"
+    environment:
+      GOCACHE: /cache/go-build
     ports:
       - "127.0.0.1:${PORT}:8080"
     volumes:
@@ -10,10 +12,10 @@ services:
         source: .
         target: /app
       - type: bind
-        source: ${CACHE_DIR}
-        target: /root/.cache/go-build
+        source: ./tmp/cache
+        target: /cache/go-build
     env_file: ".env"
-        
+    
   lint:
     image: golangci/golangci-lint:v1
     command: "golangci-lint run -v"

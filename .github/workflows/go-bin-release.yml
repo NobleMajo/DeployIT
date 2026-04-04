@@ -21,6 +21,7 @@ jobs:
           && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         goos: ["linux", "darwin", "windows"]
         goarch: ["amd64", "386", "arm64"]
@@ -33,24 +34,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event.release.tag_name }}
-
-      - name: Version and commit for ldflags
-        id: meta
-        run: |
-          VERSION=$(git describe --tags --exact-match 2>/dev/null || true)
-          if [ -z "$VERSION" ]; then
-            VERSION="${{ github.event.release.tag_name }}"
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fetch-depth: 0
 
       - uses: wangyoucao577/go-release-action@v1
         with:
-          binary_name: "dit"
-          goversion: "1.26"
+          binary_name: ${{ steps.meta.outputs.short_name }}
+          goversion: "latest"
+          overwrite: true
           extra_files: LICENSE README.md CONTRIBUTING.md
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          release_tag: ${{ steps.meta.outputs.version }}
-          ldflags: "-X main.Version=${{ steps.meta.outputs.version }} -X main.Commit=${{ steps.meta.outputs.commit }}"
+          release_tag: ${{ steps.meta.outputs.tag }}
+          ldflags: ${{ steps.meta.outputs.ldflags }}
