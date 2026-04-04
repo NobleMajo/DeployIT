@@ -49,6 +49,7 @@ jobs:
         uses: wangyoucao577/go-release-action@v1
         with:
           binary_name: ${{ steps.meta.outputs.short_name }}
+          goversion: go.mod
           overwrite: true
           extra_files: LICENSE README.md CONTRIBUTING.md
           github_token: ${{ secrets.GITHUB_TOKEN }}
