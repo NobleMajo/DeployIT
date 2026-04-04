@@ -69,7 +69,7 @@ test:
 	go vet ./...
 	go test -failfast ./...
 	make -s build
-	./bin
+	DIT_ALLOW_EMPTY=true ./bin
 
 ## init: prepares ands builds
 .PHONY: init

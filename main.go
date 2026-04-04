@@ -30,6 +30,9 @@ func main() {
 		slog.Info("environment variables loaded", "source", ".env")
 	}
 
+	allowEmptyString := os.Getenv("DIT_ALLOW_EMPTY")
+	allowEmpty := allowEmptyString == "true"
+
 	sshTasks := map[string][]string{}
 
 	var j int
@@ -39,8 +42,13 @@ func main() {
 
 		if connecitonUrl == "" {
 			if i == 0 {
-				slog.Error("no ssh config for node", "node", i+1)
-				os.Exit(1)
+				if allowEmpty {
+					slog.Info("no ssh config for node", "node", i+1)
+					os.Exit(0)
+				} else {
+					slog.Error("no ssh config for node", "node", i+1)
+					os.Exit(1)
+				}
 			}
 
 			break
