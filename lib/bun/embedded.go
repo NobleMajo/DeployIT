@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-//go:generate go run ./interface
+//go:generate go run ./generator/
 
 //go:embed embed/interface*
 var embeddedBunFS embed.FS
