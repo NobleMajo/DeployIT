@@ -9,8 +9,7 @@ on:
       - "Makefile"
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 jobs:
   build:
@@ -28,3 +27,4 @@ jobs:
 
       - name: Build
         run: make build
+

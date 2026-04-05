@@ -22,11 +22,14 @@ help:
 
 .PHONY: run # uses go to run the main program (MAIN_GO)
 run:
+	@touch .env
+	@go generate ./...
 	@go run $(MAIN_GO)
 
 .PHONY: build # uses go to build the app with build args
 build:
 	@touch .env
+	@go generate ./...
 	go build \
 		-ldflags="$(shell $(MAKE) -s buildflags)" \
 		-o bin \

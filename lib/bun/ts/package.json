@@ -4,10 +4,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "compile": "bun build --compile ./interface.ts --outfile ./interface"
+    "compile": "bun build --compile ./interface.ts --outfile ./interface",
+    "format": "bun x prettier . --write"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prettier": "3.6.2"
   },
   "peerDependencies": {
     "typescript": "^5"

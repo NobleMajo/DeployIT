@@ -30,6 +30,10 @@ jobs:
             goos: "darwin"
           - goarch: "arm64"
             goos: "windows"
+          - goarch: "386"
+            goos: "linux"
+          - goarch: "386"
+            goos: "windows"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,3 +61,4 @@ jobs:
           goarch: ${{ matrix.goarch }}
           release_tag: ${{ steps.meta.outputs.tag }}
           ldflags: ${{ steps.meta.outputs.ldflags }}
+          pre_command: GOOS="${INPUT_GOOS}" GOARCH="${INPUT_GOARCH}" go generate ./...
