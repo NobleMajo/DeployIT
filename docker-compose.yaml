@@ -5,8 +5,6 @@ services:
       target: "local"
     environment:
       GOCACHE: /cache/go-build
-    ports:
-      - "127.0.0.1:${PORT}:8080"
     volumes:
       - type: bind
         source: .
@@ -30,7 +28,4 @@ services:
     build:
       dockerfile: "Dockerfile"
       target: "deploy"
-    ports:
-      - "127.0.0.1:${PORT}:8080"
     env_file: ".env"
-
