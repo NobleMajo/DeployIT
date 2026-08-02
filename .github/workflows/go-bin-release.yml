@@ -3,9 +3,6 @@ name: Go binary release
 on:
   release:
     types: [created, edited]
-  workflow_run:
-    workflows: ["Go tag release"]
-    types: [completed]
 
 permissions:
   contents: write
@@ -14,14 +11,8 @@ permissions:
 jobs:
   releases-matrix:
     name: Release Go Binary
-    if: >-
-      github.event_name == 'release'
-      || (github.event_name == 'workflow_run'
-          && github.event.workflow_run.conclusion == 'success'
-          && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         goos: ["linux", "darwin", "windows"]
         goarch: ["amd64", "386", "arm64"]
@@ -32,28 +23,12 @@ jobs:
             goos: "windows"
     steps:
       - uses: actions/checkout@v4
+      - uses: wangyoucao577/go-release-action@v1
         with:
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event.release.tag_name }}
-          fetch-depth: 0
-
-      - name: Get build metadata
-        id: meta
-        run: |
-          echo "short_name=$(make -s short_name)" >> "$GITHUB_OUTPUT"
-          TAG=$(git describe --tags --exact-match HEAD)
-          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-          echo "commit=$(git rev-parse --short "${TAG}^{commit}")" >> "$GITHUB_OUTPUT"
-          echo "ldflags=$(make -s buildflags)" >> "$GITHUB_OUTPUT"
-
-      - name: Build release binaries
-        uses: wangyoucao577/go-release-action@v1
-        with:
-          binary_name: ${{ steps.meta.outputs.short_name }}
-          goversion: go.mod
-          overwrite: true
+          binary_name: "explorer-mcp"
+          goversion: "1.25"
           extra_files: LICENSE README.md CONTRIBUTING.md
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          release_tag: ${{ steps.meta.outputs.tag }}
-          ldflags: ${{ steps.meta.outputs.ldflags }}
+          ldflags: "-X main.Version=${{ github.ref_name }} -X main.Commit=${{ github.sha }}"
