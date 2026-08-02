@@ -2,11 +2,13 @@ package sshutils
 
 import (
 	"errors"
-	"net"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/knownhosts"
 )
 
 func HandleSftp(
@@ -16,12 +18,6 @@ func HandleSftp(
 		*ssh.Session,
 	) error,
 ) error {
-	// var hostkeyCallback ssh.HostKeyCallback
-	// hostkeyCallback, err = knownhosts.New(homeDir + "/.ssh/known_hosts")
-	// if err != nil {
-	// 	return errors.New("error parsing known hosts: " + err.Error())
-	// }
-
 	err := sshConfig.VerifySshConfig()
 	if err != nil {
 		return errors.New("error verifying ssh config: " + err.Error())
@@ -42,12 +38,20 @@ func HandleSftp(
 		authMethods = append(authMethods, ssh.PublicKeys(signer))
 	}
 
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return errors.New("error getting home directory: " + err.Error())
+	}
+
+	hostKeyCallback, err := knownhosts.New(filepath.Join(homeDir, ".ssh", "known_hosts"))
+	if err != nil {
+		return errors.New("error parsing known hosts: " + err.Error())
+	}
+
 	conf := &ssh.ClientConfig{
-		User: sshConfig.User,
-		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
-			return nil
-		},
-		Auth: authMethods,
+		User:            sshConfig.User,
+		HostKeyCallback: hostKeyCallback,
+		Auth:            authMethods,
 	}
 
 	// sftp

@@ -41,3 +41,23 @@ func TestHandleSftp_invalidPrivateKeyBeforeDial(t *testing.T) {
 		t.Fatalf("unexpected: %v", err)
 	}
 }
+
+func TestHandleSftp_knownHostsMissing(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	cfg := SshConfig{
+		User:     "u",
+		Host:     "127.0.0.1",
+		Port:     22,
+		Password: "secret",
+	}
+	err := HandleSftp(cfg, func(*sftp.Client, *ssh.Session) error {
+		t.Fatal("callback must not run when known_hosts is missing")
+		return nil
+	})
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if !strings.Contains(err.Error(), "known hosts") {
+		t.Fatalf("unexpected: %v", err)
+	}
+}
