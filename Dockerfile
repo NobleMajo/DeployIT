@@ -1,11 +1,10 @@
 ### BASE
 FROM golang AS base
 
-EXPOSE 8080
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod tidy
+COPY go.mod* go.sum* ./
+RUN go mod download
 
 ### LOCAL
 FROM base AS local
