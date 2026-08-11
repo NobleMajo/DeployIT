@@ -1,0 +1,45 @@
+name: Create release on version bump
+
+on:
+  push:
+    branches: [main]
+    paths: ['.env.project']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create release if version bumped
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(grep '^PROJECT_VERSION=' .env.project | cut -d= -f2)
+          TAG="v${VERSION}"
+          PREV=$(git show HEAD^:.env.project 2>/dev/null | grep '^PROJECT_VERSION=' | cut -d= -f2 || true)
+
+          if [ -n "$PREV" ] && [ "$PREV" = "$VERSION" ]; then
+            echo "PROJECT_VERSION unchanged"
+            exit 0
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists"
+            exit 0
+          fi
+
+          if [ -n "$PREV" ] && gh release view "v${PREV}" >/dev/null 2>&1; then
+            NOTES="**Full Changelog**: https://github.com/${{ github.repository }}/compare/v${PREV}...${TAG}"
+          else
+            NOTES="**Full Changelog**: https://github.com/${{ github.repository }}/commits/${TAG}"
+          fi
+
+          gh release create "$TAG" --title "$TAG" --notes "$NOTES" --target "${{ github.sha }}"
+          echo "Created release $TAG"
