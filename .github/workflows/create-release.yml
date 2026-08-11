@@ -45,6 +45,5 @@ jobs:
           echo "Created release $TAG"
 
           # GITHUB_TOKEN release events do not trigger other workflows; dispatch explicitly.
-          gh workflow run go-bin-release.yml \
-            --ref "${{ github.sha }}" \
-            -f release_tag="$TAG"
+          # Do not pass a commit SHA as --ref; workflow_dispatch needs a branch/tag name.
+          gh workflow run go-bin-release.yml -f release_tag="$TAG"
