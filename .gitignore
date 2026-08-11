@@ -21,6 +21,12 @@
 go.work
 go.work.sum
 bin
+.env
+.tmp
 tmp
 config
-.env
+data
+cache
+.config
+.data
+.cache
