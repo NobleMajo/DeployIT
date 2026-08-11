@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   release:
@@ -42,3 +43,8 @@ jobs:
 
           gh release create "$TAG" --title "$TAG" --notes "$NOTES" --target "${{ github.sha }}"
           echo "Created release $TAG"
+
+          # GITHUB_TOKEN release events do not trigger other workflows; dispatch explicitly.
+          gh workflow run go-bin-release.yml \
+            --ref "${{ github.sha }}" \
+            -f release_tag="$TAG"
