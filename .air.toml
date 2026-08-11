@@ -1,4 +1,3 @@
 [build]
-  cmd = "make -s test"
+  cmd = "make -s init"
   bin = "bin"
-
