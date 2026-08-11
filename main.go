@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/NobleMajo/DeployIT/lib/dit"
 	"github.com/joho/godotenv"
-	"github.com/noblemajo/deployit/lib/dit"
 )
 
 var DisplayName string = "Unset"

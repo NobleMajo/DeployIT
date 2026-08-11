@@ -1,4 +1,4 @@
-module github.com/noblemajo/deployit
+module github.com/NobleMajo/DeployIT
 
 go 1.26.1
 

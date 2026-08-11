@@ -1,11 +1,11 @@
 # deployit
 
-![CI/CD](https://github.com/NobleMajo/deployit/actions/workflows/go-bin-release.yml/badge.svg)
-![CI/CD](https://github.com/NobleMajo/deployit/actions/workflows/go-test-build.yml/badge.svg)  
+![CI/CD](https://github.com/NobleMajo/DeployIT/actions/workflows/go-bin-release.yml/badge.svg)
+![CI/CD](https://github.com/NobleMajo/DeployIT/actions/workflows/go-test-build.yml/badge.svg)  
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
-![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2Fdeployit)
-![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2Fdeployit)
-![](https://img.shields.io/badge/dynamic/json?color=navy&label=forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2Fdeployit)
+![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2FDeployIT)
+![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2FDeployIT)
+![](https://img.shields.io/badge/dynamic/json?color=navy&label=forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2FDeployIT)
 
 Uses ssh + sftp to deploy configurations to Linux servers and can execute simple commands.
 
@@ -58,13 +58,13 @@ Linux- or macos-like systems with `go` or `wget & tar` installed.
 Start the latest repo version directly without leaving stuff in the current working dir:
 
 ```sh
-go run github.com/NobleMajo/deployit@latest
+go run github.com/NobleMajo/DeployIT@latest
 ```
 
 ## Quick help
 
 ```sh
-go run github.com/NobleMajo/deployit@latest -h
+go run github.com/NobleMajo/DeployIT@latest -h
 ```
 
 ## Install via go
@@ -72,7 +72,7 @@ go run github.com/NobleMajo/deployit@latest -h
 ###### _For this section go is required, check out the [install go guide](#install-go)._
 
 ```sh
-go install github.com/NobleMajo/deployit@latest
+go install github.com/NobleMajo/DeployIT@latest
 ```
 
 ## Install via wget
@@ -82,7 +82,7 @@ export CUSTOM_BIN_DIR="/usr/local/bin" # <- change if needed
 export CUSTOM_VERSION="" # <- set latest version here
 
 rm -rf $CUSTOM_BIN_DIR/deployit
-wget https://github.com/NobleMajo/deployit/releases/download/v$CUSTOM_VERSION/deployit-v$CUSTOM_VERSION-linux-amd64.tar.gz -O /tmp/deployit.tar.gz
+wget https://github.com/NobleMajo/DeployIT/releases/download/v$CUSTOM_VERSION/deployit-v$CUSTOM_VERSION-linux-amd64.tar.gz -O /tmp/deployit.tar.gz
 tar -xzvf /tmp/deployit.tar.gz -C $CUSTOM_BIN_DIR/ deployit
 rm /tmp/deployit.tar.gz
 ```
@@ -101,8 +101,8 @@ The required go version is in the `go.mod` file.
 Clone the repo:
 
 ```sh
-git clone https://github.com/NobleMajo/deployit.git
-cd deployit
+git clone https://github.com/NobleMajo/DeployIT.git
+cd DeployIT
 ```
 
 Build the deployit binary from source code:

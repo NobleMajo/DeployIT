@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/noblemajo/deployit/lib/stringfs"
+	"github.com/NobleMajo/DeployIT/lib/stringfs"
 )
 
 type SshConfig struct {
