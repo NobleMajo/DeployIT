@@ -1,21 +1,19 @@
 ### BASE
-FROM golang AS base
+FROM golang:latest AS base
 
 WORKDIR /app
-
-COPY go.mod* go.sum* ./
-RUN go mod download
 
 ### LOCAL
 FROM base AS local
 
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends make git \
-	&& apt-get clean \
-    && apt-get autoclean \
-    && rm -rf /var/lib/apt/lists/*
+ENV HOME /home/tester
+RUN groupadd -g 1000 tester \
+    && useradd -u 1000 -g 1000 -m tester
 
-ENTRYPOINT ["bash"]
+RUN go install github.com/air-verse/air@v1
+RUN echo 'export PS1="\u@go-container:\w\$ "' >> /etc/bash.bashrc
+
+ENTRYPOINT air
 
 ### BASE DEPLOY
 FROM base AS base-deploy
@@ -23,11 +21,16 @@ COPY . .
 RUN make build
 
 ### DEPLOY
-FROM ubuntu:24.04 AS deploy
+FROM ubuntu:latest AS deploy
 
-RUN useradd -m appuser --uid 10000
-USER 10000
+RUN mkdir -p /app/data \
+	&& chown -R 1000:1000 /app \
+	&& chmod -R 755 /app
 
-COPY --from=base-deploy --chown=10000 /app/bin /usr/local/bin/appbin
+WORKDIR /app
+USER 1000:1000
+
+COPY --from=base-deploy --chown=1000:1000 \
+	/app/bin /usr/local/bin/appbin
 
 CMD ["appbin"]
