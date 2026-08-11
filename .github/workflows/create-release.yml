@@ -14,31 +14,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Create release if version bumped
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION=$(grep '^PROJECT_VERSION=' .env.project | cut -d= -f2)
-          TAG="v${VERSION}"
-          PREV=$(git show HEAD^:.env.project 2>/dev/null | grep '^PROJECT_VERSION=' | cut -d= -f2 || true)
+          set -euo pipefail
+          set -a
+          source .env.project
+          set +a
 
-          if [ -n "$PREV" ] && [ "$PREV" = "$VERSION" ]; then
-            echo "PROJECT_VERSION unchanged"
-            exit 0
-          fi
+          TAG="v${PROJECT_VERSION}"
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG already exists"
             exit 0
           fi
 
-          if [ -n "$PREV" ] && gh release view "v${PREV}" >/dev/null 2>&1; then
-            NOTES="**Full Changelog**: https://github.com/${{ github.repository }}/compare/v${PREV}...${TAG}"
+          PREV_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName // empty')
+          REPO="${{ github.repository }}"
+
+          if [ -n "$PREV_TAG" ]; then
+            NOTES="**Full Changelog**: https://github.com/${REPO}/compare/${PREV_TAG}...${TAG}"
           else
-            NOTES="**Full Changelog**: https://github.com/${{ github.repository }}/commits/${TAG}"
+            NOTES="**Full Changelog**: https://github.com/${REPO}/commits/${TAG}"
           fi
 
           gh release create "$TAG" --title "$TAG" --notes "$NOTES" --target "${{ github.sha }}"
