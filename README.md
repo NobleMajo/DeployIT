@@ -11,6 +11,8 @@
 
 </div>
 
+## About
+
 Uses ssh + sftp to deploy configurations to Linux servers and can execute simple commands.
 
 <details><summary><strong>Configuration</strong></summary>
