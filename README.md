@@ -13,18 +13,7 @@
 
 Uses ssh + sftp to deploy configurations to Linux servers and can execute simple commands.
 
-## Table of Contents
-
-- [Table of Contents](#table-of-contents)
-- [Configuration](#configuration)
-- [Requirements](#requirements)
-- [Getting Started](#getting-started)
-- [Quick help](#quick-help)
-- [Install via go](#install-via-go)
-- [Install via wget](#install-via-wget)
-- [Build requirements](#build-requirements)
-- [Build Instructions](#build-instructions)
-- [Install go](#install-go)
+<details><summary><strong>Configuration</strong></summary>
 
 ## Configuration
 
@@ -50,6 +39,10 @@ To verify deployment, it downloads each remote config to `./test.node1.wg0.conf`
 
 For this example, make sure the user you are using has permissions to access `/etc/wireguard` on the server.
 If a password is used, use `!your-password` instead of `*<priv-key-path>`.
+
+</details>
+
+<details><summary><strong>User Guide</strong></summary>
 
 # User Guide
 
@@ -116,6 +109,10 @@ make build
 ./deployit
 ```
 
+</details>
+
+<details><summary><strong>Development</strong></summary>
+
 # Development
 
 ###### _For this section go is required, check out the [install go guide](#install-go)._
@@ -137,6 +134,8 @@ git clone git@github.com:udhos/update-golang.git golang-updater
 cd golang-updater
 sudo ./update-golang.sh
 ```
+
+</details>
 
 <div align="center">
 
