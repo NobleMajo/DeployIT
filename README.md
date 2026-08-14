@@ -1,11 +1,15 @@
-# deployit
+<div align="center">
 
+# ▶️ deployit
+
+![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 ![CI/CD](https://github.com/NobleMajo/DeployIT/actions/workflows/go-bin-release.yml/badge.svg)
 ![CI/CD](https://github.com/NobleMajo/DeployIT/actions/workflows/go-test-build.yml/badge.svg)  
-![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 ![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2FDeployIT)
 ![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2FDeployIT)
 ![](https://img.shields.io/badge/dynamic/json?color=navy&label=forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2FNobleMajo%2FDeployIT)
+
+</div>
 
 Uses ssh + sftp to deploy configurations to Linux servers and can execute simple commands.
 
