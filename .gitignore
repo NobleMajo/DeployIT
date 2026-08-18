@@ -22,7 +22,6 @@ go.work
 go.work.sum
 bin
 .env
-.tmp
 tmp
 config
 data
