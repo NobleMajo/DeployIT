@@ -21,10 +21,12 @@
 go.work
 go.work.sum
 bin
-.env
 tmp
+.env
+data/
+.store/
+context/
 config
-data
 cache
 .config
 .data
