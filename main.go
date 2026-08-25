@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/NobleMajo/DeployIT/lib/dit"
+	"github.com/NobleMajo/DeployIT/internal/dit"
 	"github.com/joho/godotenv"
 )
 

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strconv"
 
-	"github.com/NobleMajo/DeployIT/lib/sshutils"
+	"github.com/NobleMajo/DeployIT/internal/sshutils"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 )
